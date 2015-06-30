@@ -4,7 +4,7 @@
 PKG             := qtwebkit
 $(PKG)_IGNORE   :=
 $(PKG)_VERSION   = $(qtbase_VERSION)
-$(PKG)_CHECKSUM := e5e92e126bb673dadc329bc726c21bf4f994d829
+$(PKG)_CHECKSUM := 402cd585ed7fea63b338fa6f89aec8b21db3564a
 $(PKG)_SUBDIR    = $(subst qtbase,qtwebkit,$(qtbase_SUBDIR))
 $(PKG)_FILE      = $(subst qtbase,qtwebkit,$(qtbase_FILE))
 $(PKG)_URL       = $(subst qtbase,qtwebkit,$(qtbase_URL))

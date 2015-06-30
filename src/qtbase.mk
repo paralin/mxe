@@ -3,21 +3,22 @@
 
 PKG             := qtbase
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 5.4.0
-$(PKG)_CHECKSUM := 2e3d32f32e36a92782ca66c260940824746900bd
+$(PKG)_VERSION  := 5.4.2
+$(PKG)_CHECKSUM := 3703c6a584193e759f5b9cbf0ea6022d685ab827
 $(PKG)_SUBDIR   := $(PKG)-opensource-src-$($(PKG)_VERSION)
 $(PKG)_FILE     := $(PKG)-opensource-src-$($(PKG)_VERSION).tar.xz
-$(PKG)_URL      := http://download.qt-project.org/official_releases/qt/5.4/$($(PKG)_VERSION)/submodules/$($(PKG)_FILE)
+$(PKG)_URL      := http://download.qt.io/official_releases/qt/5.4/$($(PKG)_VERSION)/submodules/$($(PKG)_FILE)
 $(PKG)_DEPS     := gcc postgresql freetds openssl harfbuzz zlib libpng jpeg sqlite pcre fontconfig freetype dbus icu4c
 
 define $(PKG)_UPDATE
-    $(WGET) -q -O- http://download.qt-project.org/official_releases/qt/5.1/ | \
+    $(WGET) -q -O- http://download.qt-project.org/official_releases/qt/5.4/ | \
     $(SED) -n 's,.*href="\(5\.[0-9]\.[^/]*\)/".*,\1,p' | \
     grep -iv -- '-rc' | \
     tail -1
 endef
 
 define $(PKG)_BUILD
+    # ICU is buggy. See #653. TODO: reenable it some time in the future.
     cd '$(1)' && \
         OPENSSL_LIBS="`'$(TARGET)-pkg-config' --libs-only-l openssl`" \
         PSQL_LIBS="-lpq -lsecur32 `'$(TARGET)-pkg-config' --libs-only-l openssl` -lws2_32" \
@@ -33,7 +34,7 @@ define $(PKG)_BUILD
             -release \
             -static \
             -prefix '$(PREFIX)/$(TARGET)/qt5' \
-            -icu \
+            -no-icu \
             -opengl desktop \
             -no-glib \
             -accessibility \

@@ -37,7 +37,7 @@ WGET       := wget --no-check-certificate \
 REQUIREMENTS := autoconf automake autopoint bash bison bzip2 cmake flex \
                 gcc g++ gperf intltoolize $(LIBTOOL) $(LIBTOOLIZE) \
                 $(MAKE) openssl $(PATCH) $(PERL) python ruby scons \
-                $(SED) $(SORT) unzip wget xz
+                $(SED) $(SORT) unzip wget xz 7za
 
 PREFIX     := $(PWD)/usr
 LOG_DIR    := $(PWD)/log
@@ -119,12 +119,12 @@ MAKE_SHARED_FROM_STATIC = \
 
 define MXE_GET_GITHUB_SHA
     $(WGET) -q -O- 'https://api.github.com/repos/$(strip $(1))/git/refs/heads/$(strip $(2))' | \
-    $(SED) -n 's#.*"sha": "\([^<]\{7\}\)[^<]\{3\}.*#\1#p' | \
+    $(SED) -n 's#.*"sha": "\([^"]\{10\}\).*#\1#p' | \
     head -1
 endef
 
 # use a minimal whitelist of safe environment variables
-ENV_WHITELIST := PATH LANG MAKE% MXE% %PROXY %proxy
+ENV_WHITELIST := PATH LANG MAKE% MXE% %PROXY %proxy LD_LIBRARY_PATH ACLOCAL_PATH
 unexport $(filter-out $(ENV_WHITELIST),$(shell env | cut -d '=' -f1))
 
 SHORT_PKG_VERSION = \
@@ -138,8 +138,9 @@ UNPACK_ARCHIVE = \
     $(if $(filter %.tar.lzma,$(1)),xz -dc -F lzma '$(1)' | tar xf -, \
     $(if $(filter %.txz,     $(1)),xz -dc '$(1)' | tar xf -, \
     $(if $(filter %.tar.xz,  $(1)),xz -dc '$(1)' | tar xf -, \
+    $(if $(filter %.7z,      $(1)),7za x '$(1)', \
     $(if $(filter %.zip,     $(1)),unzip -q '$(1)', \
-    $(error Unknown archive format: $(1))))))))))
+    $(error Unknown archive format: $(1)))))))))))
 
 UNPACK_PKG_ARCHIVE = \
     $(call UNPACK_ARCHIVE,$(PKG_DIR)/$($(1)_FILE))
