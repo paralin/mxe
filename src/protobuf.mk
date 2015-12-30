@@ -4,10 +4,10 @@
 PKG             := protobuf
 $(PKG)_IGNORE   :=
 $(PKG)_VERSION  := 2.6.1
-$(PKG)_CHECKSUM := 6421ee86d8fb4e39f21f56991daa892a3e8d314b
+$(PKG)_CHECKSUM := ee445612d544d885ae240ffbcbf9267faa9f593b7b101f21d58beceb92661910
 $(PKG)_SUBDIR   := $(PKG)-$($(PKG)_VERSION)
 $(PKG)_FILE     := $(PKG)-$($(PKG)_VERSION).tar.bz2
-$(PKG)_URL      := https://github.com/google/protobuf/releases/download/v$($(PKG)_VERSION)/protobuf-$($(PKG)_VERSION).tar.bz2
+$(PKG)_URL      := https://github.com/google/protobuf/releases/download/v$($(PKG)_VERSION)/$(PKG)-$($(PKG)_VERSION).tar.bz2
 $(PKG)_DEPS     := gcc zlib
 
 define $(PKG)_UPDATE
@@ -22,13 +22,13 @@ define $(PKG)_BUILD
     cd '$(1)' && ./configure \
         --disable-shared
     $(MAKE) -C '$(1)' -j '$(JOBS)'
-    cp '$(1)/src/protoc' '$(1)/src/protoc_host'
+    cp '$(1)/src/protoc' '$(PREFIX)/bin/$(TARGET)-protoc'
     $(MAKE) -C '$(1)' -j 1 distclean
 # Second step: Build for target system.
     cd '$(1)' && ./configure \
         $(MXE_CONFIGURE_OPTS) \
         --with-zlib \
-        --with-protoc=src/protoc_host
+        --with-protoc='$(PREFIX)/bin/$(TARGET)-protoc'
     $(MAKE) -C '$(1)' -j '$(JOBS)'
     $(MAKE) -C '$(1)' -j 1 install
 
